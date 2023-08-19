@@ -16,7 +16,8 @@ const db_groups = new sqlite3.Database('mydatabase.db', (err) => {
       website TEXT NULL,
       facebook TEXT NULL,
       federation_member BOOLEAN NOT NULL,
-      state TEXT NULL,
+      state_short TEXT NULL,
+      state_long TEXT NULL,
       latitude REAL NULL,
       longitude REAL NULL
     )`, (tableErr) => {
