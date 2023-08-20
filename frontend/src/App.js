@@ -6,12 +6,13 @@ import Menu from './menu.js';
 
 function App() {
   const [selectedGroups, setSelectedGroups] = useState('');
+  const [highlightedGroup, setHighlightedGroup] = useState('');
 
   return (
     <div className="App">
       <Menu />
-      <GroupList setSelectedGroups={setSelectedGroups} />
-      <MapComponent selectedGroups={selectedGroups} />
+      <GroupList setSelectedGroups={setSelectedGroups} highlightedGroup={highlightedGroup} />
+      <MapComponent selectedGroups={selectedGroups} setHighlightedGroup={setHighlightedGroup} />
     </div>
   );
 }

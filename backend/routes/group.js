@@ -99,7 +99,7 @@ router.post('/add_multi', async function (req, res, next) {
           return { status: 400, message: `Group already exists: ${name}` };
         }
 
-        const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram);
+        const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram, state);
         const geocodeResult = await geocodeGroup(name, street, city, state);
 
         if (geocodeResult) {
@@ -140,7 +140,7 @@ router.post('/', async function (req, res, next) {
       return res.status(400).json({ error: 'Group already exists' });
     }
 
-    const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram);
+    const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram, state);
     const geocodeResult = await geocodeGroup(name, street, city, state);
 
     if (!geocodeResult || !Array.isArray(geocodeResult) || geocodeResult.length === 0) {
@@ -168,11 +168,11 @@ async function getGroupByName(name) {
   });
 }
 
-async function insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram) {
+async function insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram, state) {
   return new Promise((resolve, reject) => {
     db_groups.run(
-      'INSERT INTO groups (name, street, city, website, facebook, federation_member, youtube, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, street, city, website, facebook, federation_member, youtube, instagram],
+      'INSERT INTO groups (name, street, city, website, facebook, federation_member, youtube, instagram, state_long) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, street, city, website, facebook, federation_member, youtube, instagram, state],
       function (err) {
         if (err) {
           reject(err);
@@ -201,12 +201,11 @@ async function updateGroupWithGeocoding(groupId, geocodeResult) {
 
   return new Promise((resolve, reject) => {
     db_groups.run(
-      'UPDATE groups SET latitude = ?, longitude = ?, state_short = ?, state_long = ? WHERE id = ?',
+      'UPDATE groups SET latitude = ?, longitude = ?, state_short = ? WHERE id = ?',
       [
         geocodeResult[0].latitude,
         geocodeResult[0].longitude,
         geocodeResult[0].administrativeLevels.level1short,
-        geocodeResult[0].administrativeLevels.level1long,
         groupId,
       ],
       (err) => {

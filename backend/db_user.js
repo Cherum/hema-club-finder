@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 // Initialize SQLite database
 const db_user = new sqlite3.Database('mydatabase.db', (err) => {
+    // db_user.run('DROP TABLE IF EXISTS users');
     if (err) {
         console.error('Error opening database:', err.message);
     } else {
@@ -9,7 +10,8 @@ const db_user = new sqlite3.Database('mydatabase.db', (err) => {
         db_user.run(`CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY,
       username TEXT NOT NULL,
-      email TEXT NOT NULL
+      email TEXT NOT NULL,
+      password_hash TEXT NOT NULL
     )`, (tableErr) => {
             if (tableErr) {
                 console.error('Error creating table:', tableErr.message);

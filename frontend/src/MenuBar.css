@@ -1,69 +1,52 @@
 .menu-bar {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: #333;
-    color: white;
+    color: #fff;
     padding: 10px;
 }
 
 .menu-item {
     margin-right: 10px;
-    position: relative;
     cursor: pointer;
-}
-
-.login-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #333;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.login-dropdown form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.login-dropdown input {
-    width: 100%;
-    margin: 5px 0;
-    padding: 5px;
-    border: none;
-    border-radius: 3px;
-}
-
-.login-dropdown button {
-    padding: 5px 10px;
-    background-color: #444;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.login-dropdown button:hover {
-    background-color: #555;
-}
-
-.menu-item input[type="text"],
-.menu-item input[type="password"] {
-    padding: 5px;
-    border: none;
-    border-radius: 3px;
 }
 
 .menu-item button {
-    padding: 5px 10px;
-    background-color: #444;
-    color: white;
+    background-color: #007bff;
+    color: #fff;
     border: none;
-    border-radius: 3px;
+    padding: 5px 10px;
     cursor: pointer;
+    font-size: 12px;
 }
 
 .menu-item button:hover {
-    background-color: #555;
+    background-color: #0056b3;
+}
+
+.menu-item form {
+    display: flex;
+    align-items: center;
+}
+
+.menu-item input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.menu-item input[type="submit"] {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.menu-item input[type="submit"]:hover {
+    background-color: #1f8030;
 }

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db_user = require('../db_user');
+const { SHA256 } = require('crypto-js');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -28,11 +29,13 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  const { username, email } = req.body;
+  const { username, email, password } = req.body;
+
+  const hashedPassword = SHA256(password).toString();
   if (!username || !email) {
     res.status(400).json({ error: 'Missing required parameters' });
   } else {
-    db_user.run('INSERT INTO users (username, email) VALUES (?, ?)', [username, email], (err) => {
+    db_user.run('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', [username, email, hashedPassword], (err) => {
       if (err) {
         console.error('Error inserting user:', err.message);
         res.status(500).json({ error: 'Internal server error' });
