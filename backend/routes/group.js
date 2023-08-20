@@ -20,7 +20,7 @@ router.get('/:id', function (req, res, next) {
 // get all groups from db
 router.get('/', function (req, res, next) {
   // get all groups from db and return as json
-  db_groups.all('SELECT * FROM groups ORDER BY name, state_long, city', (err, rows) => {
+  db_groups.all('SELECT * FROM groups ORDER BY name, city', (err, rows) => {
     if (err) {
       console.error('Error fetching groups:', err.message);
       res.status(500).json({ error: 'Internal server error' });
@@ -127,10 +127,11 @@ router.post('/add_multi', async function (req, res, next) {
 });
 
 router.post('/', async function (req, res, next) {
+  console.log("req.body: ", req.body)
   try {
     const { name, street, city, website, facebook, federation_member, youtube, state, instagram } = req.body;
 
-    if (!name || !city || !federation_member) {
+    if (!name || !city) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 

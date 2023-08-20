@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { SHA256 } from 'crypto-js';
+import GroupFormOverlay from './add_group.js'; // Adjust the path
 import './MenuBar.css'; // Stil für die Menüleiste
 
 function MenuBar() {
+    const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+
+    const handleOpenOverlay = () => {
+        setIsOverlayOpen(true);
+    };
+
+    const handleCloseOverlay = () => {
+        setIsOverlayOpen(false);
+    };
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -32,7 +43,8 @@ function MenuBar() {
         <div className="menu-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="menu-item">HEMA Gruppe finden</div>
             <div className="menu-item">
-                <button>Gruppe eintragen</button>
+                <button onClick={handleOpenOverlay}>Gruppe eintragen</button>
+                <GroupFormOverlay isOpen={isOverlayOpen} onRequestClose={handleCloseOverlay} />
             </div>
             <div className="menu-item">
                 <div>
