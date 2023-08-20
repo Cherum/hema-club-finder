@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,11 +11,20 @@ function GroupList({ setSelectedGroups, highlightedGroup }) {
     const [showFilter, setShowFilter] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState('');
 
+    // Create a ref to hold the reference of the highlighted row element
+    const highlightedRowRef = useRef(null);
+
+    useEffect(() => {
+        if (highlightedRowRef.current) {
+            highlightedRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [highlightedGroup]); // Only re-run the effect if selectedBundesland changes
+
+
     useEffect(() => {
         console.log('Fetching groups...');
         axios.get('http://localhost:3000/group')
             .then(response => {
-                console.log('Groups:', response.data);
                 setSortedGroups(response.data);
             })
             .catch(error => {
@@ -65,7 +74,7 @@ function GroupList({ setSelectedGroups, highlightedGroup }) {
     const generateSocialMediaLink = (iconName, link, color, icon) => {
         if (link) {
             return (
-                <a key={iconName} href={link} target="_blank" rel="noopener noreferrer" style={{ marginRight: '0.5rem' }}>
+                <a key={iconName} href={link} target="_blank" rel="noopener noreferrer" style={{ marginRight: '0.3rem' }}>
                     <FontAwesomeIcon icon={icon} color={color} />
                 </a>
             );
@@ -76,7 +85,7 @@ function GroupList({ setSelectedGroups, highlightedGroup }) {
     const generateSocialMediaLinks = (group) => {
         const socialMediaLinks = [];
 
-        socialMediaLinks.push(generateSocialMediaLink('house', group.website, null, icon({ name: 'house' })));
+        // socialMediaLinks.push(generateSocialMediaLink('house', group.website, null, icon({ name: 'house' })));
         socialMediaLinks.push(generateSocialMediaLink('facebook', group.facebook, null, icon({ name: 'facebook', style: 'brands' })));
         socialMediaLinks.push(generateSocialMediaLink('youtube', group.youtube, 'red', icon({ name: 'youtube', style: 'brands' })));
         socialMediaLinks.push(generateSocialMediaLink('instagram', group.instagram, 'red', icon({ name: 'instagram', style: 'brands' })));
@@ -90,14 +99,14 @@ function GroupList({ setSelectedGroups, highlightedGroup }) {
                 <h2 style={{ flexShrink: 0 }}>HEMA Gruppen Deutschland</h2>
             </div>
             <div style={{ flex: 1, overflowY: 'auto' }}>
-                <table style={{ width: '100%', tableLayout: 'fixed' }}>
+                <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', borderSpacing: 0 }}>
                     <thead>
                         <tr>
-                            <th style={{ width: '35%' }}>
+                            <th style={{ width: '40%' }}>
                                 Name
                                 <FontAwesomeIcon
                                     icon={icon({ name: 'search' })}
-                                    style={{ marginLeft: '0.5rem', cursor: 'pointer', color: getFilterIconColor('name') }}
+                                    style={{ marginRight: '0.3rem', cursor: 'pointer', color: getFilterIconColor('name'), float: 'right' }}
                                 />
                             </th>
                             <th style={{ width: '20%' }}>
@@ -105,27 +114,36 @@ function GroupList({ setSelectedGroups, highlightedGroup }) {
                                 <FontAwesomeIcon
                                     icon={icon({ name: 'filter' })}
                                     onClick={() => toggleFilter('city')}
-                                    style={{ marginLeft: '0.5rem', cursor: 'pointer', color: getFilterIconColor('city') }}
+                                    style={{ marginRight: '0.3rem', cursor: 'pointer', color: getFilterIconColor('city'), float: 'right' }}
                                 />
                             </th>
-                            <th style={{ width: '30%' }}>
+                            <th style={{ width: '25%' }}>
                                 Bundesland
                                 <FontAwesomeIcon
                                     icon={icon({ name: 'filter' })}
                                     onClick={() => toggleFilter('state_long')}
-                                    style={{ marginLeft: '0.5rem', cursor: 'pointer', color: getFilterIconColor('state_long') }}
+                                    style={{ marginRight: '0.3rem', cursor: 'pointer', color: getFilterIconColor('state_long'), float: 'right' }}
                                 />
                             </th>
-                            <th style={{ width: '15%', textAlign: 'center' }}>Links</th>
+                            <th style={{ width: '15%', textAlign: 'right' }}>Links</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredGroups.map(group => (
-                            <tr key={group.id} style={{ backgroundColor: highlightedGroup && highlightedGroup.id === group.id ? 'yellow' : 'transparent' }}>
-                                <td><b>{group.name}</b></td>
-                                <td>{group.city}</td>
-                                <td>{group.state_long}</td>
-                                <td style={{ textAlign: 'center' }}>
+                            <tr
+                                key={group.id} style={{ backgroundColor: highlightedGroup && highlightedGroup.id === group.id ? 'yellow' : 'transparent' }}
+                                ref={highlightedGroup && highlightedGroup.id === group.id ? highlightedRowRef : null}
+                            >
+                                <td style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {group.website ? (
+                                        <a href={group.website} target="_blank" rel="noopener noreferrer">{group.name}</a>
+                                    ) : (
+                                        group.name
+                                    )}
+                                </td>
+                                <td style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{group.city}</td>
+                                <td style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{group.state_long}</td>
+                                <td style={{ textAlign: 'right' }}>
                                     {generateSocialMediaLinks(group)}
                                 </td>
                             </tr>

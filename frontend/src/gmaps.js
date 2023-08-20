@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow, Tooltip } from '@react-google-maps/api';
 import axios from 'axios';
 import { env } from './next.conf.js';
 import { markerColors } from './map.colors.js';
+import './gmaps.css';
 
 const containerStyle = {
     width: '70%',
@@ -17,6 +18,7 @@ const center = { // Center of Germany
 
 function MapComponent({ selectedGroups, setHighlightedGroup }) {
     const [selectedGroup, setSelectedGroup] = useState(null);
+
 
     const [groups, setGroups] = useState([]);
     useEffect(() => {
@@ -42,11 +44,6 @@ function MapComponent({ selectedGroups, setHighlightedGroup }) {
         setHighlightedGroup(group);
     };
 
-    const handleInfoWindowClose = () => {
-        setSelectedGroup(null);
-        setHighlightedGroup(null);
-    };
-
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
@@ -57,58 +54,12 @@ function MapComponent({ selectedGroups, setHighlightedGroup }) {
                 <Marker
                     key={group.id}
                     position={{ lat: group.latitude, lng: group.longitude }}
-                    title={group.name}
+                    title={group.name + ", " + group.city} // Use the native HTML title attribute
                     onClick={() => handleMarkerClick(group)}
                     visible={selectedGroups.length === 0 || selectedGroups.some(selectedGroup => selectedGroup.id === group.id)}
                     icon={`https://mt.google.com/vt/icon/name=icons/onion/SHARED-mymaps-pin-container_4x.png,icons/onion/1899-blank-shape_pin_4x.png&highlight=${markerColors[group.state_short]},ff000000&scale=1.0`}
-
                     optimized={true}
                 >
-                    {selectedGroup === group && (
-                        <InfoWindow onCloseClick={handleInfoWindowClose}>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th colSpan={2}><h2>{group.name}</h2></th>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Adresse:</b></td>
-                                        <td>
-                                            {group.street ? `${group.street}, ${group.city}` : `${group.city}`} ({group.state_long})
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Website:</b></td>
-                                        <td>
-                                            {group.website ? (
-                                                <a href={group.website} target="_blank" rel="noopener noreferrer">
-                                                    {group.website}
-                                                </a>
-                                            ) : (
-                                                'Keine Website bekannt'
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Facebook:</b></td>
-                                        <td>
-                                            {group.facebook ? (
-                                                <a href={group.facebook} target="_blank" rel="noopener noreferrer">
-                                                    {group.facebook}
-                                                </a>
-                                            ) : (
-                                                'Kein Facebook bekannt'
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>DDHF Mitglied:</b></td>
-                                        <td>{group.federation_member ? 'Ja' : 'Nein'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </InfoWindow>
-                    )}
                 </Marker>
             ))}
         </GoogleMap>
