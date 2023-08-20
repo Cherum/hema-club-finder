@@ -8,14 +8,18 @@ const containerStyle = {
     height: '80%'
 };
 
-const center = {
+const center = { // Center of Germany
     lat: 51.1657,
     lng: 10.4515
 };
 
 
-function MyComponent() {
-    console.log('MyComponent');
+function MapComponent({ selectedGroups }) {
+    useEffect(() => {
+        console.log('selectedGroups changed', selectedGroups);
+        // updateMapMarkers(selectedBundesland);
+
+    }, [selectedGroups]); // Only re-run the effect if selectedBundesland changes
 
     const [selectedGroup, setSelectedGroup] = useState(null);
 
@@ -37,20 +41,6 @@ function MyComponent() {
         id: 'google-map-script',
         googleMapsApiKey: env.GOOGLE_API_KEY
     })
-
-    const [map, setMap] = React.useState(null)
-
-    const onLoad = React.useCallback(function callback(map) {
-        // This is just an example of getting and using the map instance!!! don't just blindly copy!
-        const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
-
-        setMap(map)
-    }, [])
-
-    const onUnmount = React.useCallback(function callback(map) {
-        setMap(null)
-    }, [])
 
     const handleMarkerClick = (group) => {
         setSelectedGroup(group);
@@ -93,6 +83,7 @@ function MyComponent() {
                     position={{ lat: group.latitude, lng: group.longitude }}
                     title={group.name}
                     onClick={() => handleMarkerClick(group)}
+                    visible={selectedGroups.length === 0 || selectedGroups.some(selectedGroup => selectedGroup.id === group.id)}
                     icon={`https://mt.google.com/vt/icon/name=icons/onion/SHARED-mymaps-pin-container_4x.png,icons/onion/1899-blank-shape_pin_4x.png&highlight=${markerColors[group.state_short]},ff000000&scale=1.0`}
 
                     optimized={true}
@@ -148,4 +139,4 @@ function MyComponent() {
     ) : <></>
 }
 
-export default React.memo(MyComponent)
+export default React.memo(MapComponent)

@@ -1,14 +1,17 @@
 import './App.css';
-import MyComponent from './gmaps.js';
+import React, { useState } from 'react';
+import MapComponent from './gmaps.js';
 import GroupList from './group_list.js';
 import Menu from './menu.js';
 
 function App() {
+  const [selectedGroups, setSelectedGroups] = useState('');
+
   return (
     <div className="App">
       <Menu />
-      <GroupList />
-      <MyComponent />
+      <GroupList setSelectedGroups={setSelectedGroups} />
+      <MapComponent selectedGroups={selectedGroups} />
     </div>
   );
 }
