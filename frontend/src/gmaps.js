@@ -4,7 +4,7 @@ import axios from 'axios';
 import { env } from './next.conf.js';
 
 const containerStyle = {
-    width: '80%',
+    width: '60%',
     height: '80%'
 };
 

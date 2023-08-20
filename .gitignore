@@ -82,7 +82,6 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
-
 next.conf.js
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -157,3 +156,5 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react,node
+
+mydatabase.db

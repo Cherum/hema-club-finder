@@ -33,11 +33,11 @@ router.get('/', function (req, res, next) {
 
 router.put('/:id', function (req, res, next) {
   const { id } = req.params;
-  const { name, street, city, website, facebook, federation_member } = req.body;
+  const { name, street, city, website, facebook, federation_member, youtube } = req.body;
   if (!id || !name || !city) {
     res.status(400).json({ error: 'Missing required parameters' });
   } else {
-    db_groups.run('UPDATE groups SET name = ?, street = ?, city = ?, website = ?, facebook = ?, federation_member = ? WHERE id = ?', [name, street, city, website, facebook, federation_member, id], (err) => {
+    db_groups.run('UPDATE groups SET name = ?, street = ?, city = ?, website = ?, facebook = ?, federation_member = ?, youtube = ? WHERE id = ?', [name, street, city, website, facebook, federation_member, youtube, id], (err) => {
       if (err) {
         console.error('Error updating group:', err.message);
         res.status(500).json({ error: 'Internal server error' });
@@ -87,7 +87,7 @@ router.post('/add_multi', async function (req, res, next) {
 
     const results = await Promise.all(
       groupsToAdd.map(async (group) => {
-        const { name, street, city, website, facebook, federation_member } = group;
+        const { name, street, city, website, facebook, federation_member, youtube, state, instagram } = group;
 
         if (!name || !city) {
           return { status: 400, message: `Missing required parameters for group: ${name}` };
@@ -99,8 +99,8 @@ router.post('/add_multi', async function (req, res, next) {
           return { status: 400, message: `Group already exists: ${name}` };
         }
 
-        const groupId = await insertGroup(name, street, city, website, facebook, federation_member);
-        const geocodeResult = await geocodeGroup(name, street, city);
+        const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram);
+        const geocodeResult = await geocodeGroup(name, street, city, state);
 
         if (geocodeResult) {
           await updateGroupWithGeocoding(groupId, geocodeResult);
@@ -128,7 +128,7 @@ router.post('/add_multi', async function (req, res, next) {
 
 router.post('/', async function (req, res, next) {
   try {
-    const { name, street, city, website, facebook, federation_member } = req.body;
+    const { name, street, city, website, facebook, federation_member, youtube, state, instagram } = req.body;
 
     if (!name || !city || !federation_member) {
       return res.status(400).json({ error: 'Missing required parameters' });
@@ -140,8 +140,8 @@ router.post('/', async function (req, res, next) {
       return res.status(400).json({ error: 'Group already exists' });
     }
 
-    const groupId = await insertGroup(name, street, city, website, facebook, federation_member);
-    const geocodeResult = await geocodeGroup(name, street, city);
+    const groupId = await insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram);
+    const geocodeResult = await geocodeGroup(name, street, city, state);
 
     if (!geocodeResult || !Array.isArray(geocodeResult) || geocodeResult.length === 0) {
       console.warn('No geocoding result for group:', name);
@@ -168,11 +168,11 @@ async function getGroupByName(name) {
   });
 }
 
-async function insertGroup(name, street, city, website, facebook, federation_member) {
+async function insertGroup(name, street, city, website, facebook, federation_member, youtube, instagram) {
   return new Promise((resolve, reject) => {
     db_groups.run(
-      'INSERT INTO groups (name, street, city, website, facebook, federation_member) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, street, city, website, facebook, federation_member],
+      'INSERT INTO groups (name, street, city, website, facebook, federation_member, youtube, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, street, city, website, facebook, federation_member, youtube, instagram],
       function (err) {
         if (err) {
           reject(err);
@@ -184,10 +184,11 @@ async function insertGroup(name, street, city, website, facebook, federation_mem
   });
 }
 
-async function geocodeGroup(name, street, city) {
+async function geocodeGroup(name, street, city, state) {
   const nameString = name ? name + ', ' : ''
   const streetString = street ? street + ', ' : ''
-  const toGeoCode = nameString + streetString + city
+  const stateString = state ? ', ' + state : ''
+  const toGeoCode = nameString + streetString + city + stateString
 
   console.log("Geocode: ", toGeoCode)
   return geocoder(toGeoCode);
